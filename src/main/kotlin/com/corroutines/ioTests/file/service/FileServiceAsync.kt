@@ -34,18 +34,6 @@ class FileServiceAsync(
         return ResourcePatternUtils.getResourcePatternResolver(resourceLoader).getResources("classpath:images/*.jpg").map { it.filename!! to it.file }
     }
 
-    suspend fun processOneImage() {
-        val image = getOneFile()
-        val compressedImage = compress(image, "/tmp/folderTeste/", 50)
-    }
-
-
-    private suspend fun getOneFile(): Pair<String, File> {
-        val resource = resourceLoader.getResource("classpath:images/01 - January 2020 (myphotopack.com).jpg")
-        return resource.filename!! to resource.file
-    }
-
-
     private suspend fun compress(image: Pair<String, File>, folderName: String, compressionQuality: Int): Pair<String, File> {
         val receivedImage = ImageIO.read(image.second)
         val compressedImageFile = File.createTempFile(folderName, image.first)

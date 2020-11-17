@@ -19,9 +19,7 @@ class Routers {
     @Bean
     fun filesRoutes(filesHandler: FilesHandler) =
             coRouter {
-                GET("/process-file-sync", filesHandler::processOneFileSync)
                 GET("/process-files-sync", filesHandler::processManyFilesSync)
-                GET("/process-file-async", filesHandler::processOneFileAsync)
                 GET("/process-files-async", filesHandler::processManyFilesAsync)
             }
 

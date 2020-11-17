@@ -19,11 +19,13 @@ class FileServiceAsync(
             coroutineScope {
                 val images = getFiles()
                 val compressedImages =
-                        images.asSequence().map {
-                            async {
-                                compress(it, "/tmp/folderTeste/", 50)
-                            }
-                        }.toList()
+                        withContext(Dispatchers.IO){
+                            images.asSequence().map {
+                                async {
+                                    compress(it, "/tmp/folderTeste/", 50)
+                                }
+                            }.toList()
+                        }
                 return@coroutineScope compressedImages.awaitAll()
             }
 

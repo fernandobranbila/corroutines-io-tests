@@ -10,35 +10,32 @@ import javax.imageio.ImageIO
 import javax.imageio.ImageWriteParam
 
 @Component
-class FileService(
+class FileServiceSync(
         private val resourceLoader: ResourceLoader,
 ) {
 
-    val FILE_PATH = "classpath:images/*.jpg"
-
-    suspend fun processImages() {
+     fun processImages() {
         val images = getFiles()
         val compressedImages = images.map { compress(it, "/tmp/folderTeste/", 50) }
-        println(compressedImages)
     }
 
-    private suspend fun getFiles(): List<Pair<String, File>> {
-        return ResourcePatternUtils.getResourcePatternResolver(resourceLoader).getResources(FILE_PATH).map { it.filename!! to it.file }
+    private  fun getFiles(): List<Pair<String, File>> {
+        return ResourcePatternUtils.getResourcePatternResolver(resourceLoader).getResources("classpath:images/*.jpg").map { it.filename!! to it.file }
     }
 
-    suspend fun processOneImage() {
+     fun processOneImage() {
         val image = getOneFile()
         val compressedImage = compress(image, "/tmp/folderTeste/", 50)
     }
 
 
-    private suspend fun getOneFile(): Pair<String, File> {
-        val resource = resourceLoader.getResource(FILE_PATH)
+    private  fun getOneFile(): Pair<String, File> {
+        val resource = resourceLoader.getResource("classpath:images/01 - January 2020 (myphotopack.com).jpg")
         return resource.filename!! to resource.file
     }
 
 
-    private suspend fun compress(image: Pair<String, File>, folderName: String, compressionQuality: Int): Pair<String, File> {
+    private  fun compress(image: Pair<String, File>, folderName: String, compressionQuality: Int): Pair<String, File> {
         val receivedImage = ImageIO.read(image.second)
         val compressedImageFile = File.createTempFile(folderName, image.first)
         val os = FileOutputStream(compressedImageFile)
@@ -57,5 +54,5 @@ class FileService(
         return Pair(image.first, compressedImageFile)
     }
 
-    private suspend fun getImageExtension(filename: String) = filename.replaceBeforeLast(".", "").replace(".", "")
+    private  fun getImageExtension(filename: String) = filename.replaceBeforeLast(".", "").replace(".", "")
 }

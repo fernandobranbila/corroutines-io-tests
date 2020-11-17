@@ -1,6 +1,7 @@
 package com.corroutines.ioTests.file.entrypoint
 
-import com.corroutines.ioTests.file.service.FileService
+import com.corroutines.ioTests.file.service.FileServiceAsync
+import com.corroutines.ioTests.file.service.FileServiceSync
 import kotlinx.coroutines.reactive.awaitSingle
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.ServerRequest
@@ -10,19 +11,34 @@ import kotlin.system.measureTimeMillis
 
 @Component
 class FilesHandler(
-        private val fileService: FileService,
+        private val fileServiceSync: FileServiceSync,
+        private val fileServiceAsync: FileServiceAsync,
 ) {
 
-    suspend fun processOneFile(request: ServerRequest): ServerResponse {
+    suspend fun processOneFileSync(request: ServerRequest): ServerResponse {
         val time = measureTimeMillis {
-            fileService.processOneImage()
+            fileServiceSync.processOneImage()
         }
         return ServerResponse.ok().json().bodyValue(time).awaitSingle()
     }
 
-    suspend fun processManyFiles(request: ServerRequest): ServerResponse {
+    suspend fun processManyFilesSync(request: ServerRequest): ServerResponse {
         val time = measureTimeMillis {
-            fileService.processImages()
+            fileServiceSync.processImages()
+        }
+        return ServerResponse.ok().json().bodyValue(time).awaitSingle()
+    }
+
+    suspend fun processOneFileAsync(request: ServerRequest): ServerResponse {
+        val time = measureTimeMillis {
+            fileServiceAsync.processOneImage()
+        }
+        return ServerResponse.ok().json().bodyValue(time).awaitSingle()
+    }
+
+    suspend fun processManyFilesAsync(request: ServerRequest): ServerResponse {
+        val time = measureTimeMillis {
+            val test = fileServiceAsync.processImages()
         }
         return ServerResponse.ok().json().bodyValue(time).awaitSingle()
     }

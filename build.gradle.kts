@@ -27,6 +27,7 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("io.r2dbc:r2dbc-postgresql")
     implementation("org.postgresql:postgresql")
+    implementation("org.zeroturnaround:zt-zip:1.6")
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
     }

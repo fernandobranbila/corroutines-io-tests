@@ -1,6 +1,7 @@
 package com.corroutines.ioTests
 
 import com.corroutines.ioTests.digimon.entrypoint.DigimonHandler
+import com.corroutines.ioTests.file.entrypoint.FilesHandler
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.reactive.function.server.coRouter
@@ -9,10 +10,17 @@ import org.springframework.web.reactive.function.server.coRouter
 class Routers {
 
     @Bean
-    fun routes(publicationHandler: DigimonHandler) =
+    fun digimonRoutes(digimonsHandler: DigimonHandler) =
             coRouter {
-                GET("/digimonsAsync", publicationHandler::getAllDigimonsAsync)
-                GET("/digimonsSync", publicationHandler::getAllDigimonsSync)
+                GET("/digimons-async", digimonsHandler::getAllDigimonsAsync)
+                GET("/digimons-sync", digimonsHandler::getAllDigimonsSync)
+            }
+
+    @Bean
+    fun filesRoutes(filesHandler: FilesHandler) =
+            coRouter {
+                GET("/process-file", filesHandler::processOneFile)
+                GET("/process-files", filesHandler::processManyFiles)
             }
 
 }

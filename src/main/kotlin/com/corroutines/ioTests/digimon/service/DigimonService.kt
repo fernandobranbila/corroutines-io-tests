@@ -12,9 +12,6 @@ import org.springframework.web.client.RestTemplate
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.awaitBody
 import org.springframework.web.reactive.function.client.awaitExchange
-import org.springframework.web.reactive.function.client.bodyToFlow
-import java.time.Instant
-import java.time.LocalDateTime
 import kotlin.system.measureTimeMillis
 
 @Component
@@ -28,38 +25,45 @@ class DigimonService(
 
     val FILE_PATH = "classpath:digimon.txt"
 
-    suspend fun findAllDigimonsAsync(): Long {
-        return coroutineScope {
-            val digimons = getDigimonsFromFile()
-            val time = measureTimeMillis {
-                val digimonsAPIResponse = withContext(Dispatchers.Default) {
-                    val requests = digimons.asSequence().map { digimon ->
-                        async {
-                            webClient.get().uri { uriBuilder ->
-                                uriBuilder.path("/{name}")
-                                        .build(digimon)
-                            }.awaitExchange().awaitBody<List<Digimon>>()
+    suspend fun findAllDigimonsAsync(): List<List<Digimon>> =
+            //Começa o escopo de uma corroutine usando configurações padrões
+            coroutineScope {
+                //Pega a lista de digimons de forma concorrente
+                val digimons = getDigimonsFromFileSuspend()
+                //Atribui o resultado da linha 49, onde o Deferred foi resolvido (await)
+                val digimonsAPIResponse =
+                        //Inicia uma nova corroutine em um novo contexto diferente da original ( Dispatcher diferentes tem pools de threads diferentes otimizadas pra tal execução)
+                        withContext(Dispatchers.IO) {
+                            //Recebe o retorno da chamada com o WebClient (Versão async do RestTemplate do Spring)
+                            val digimonsAPIRequest =
+                                    //Inicia uma nova corroutine para cada um dos elementos na lista (cada bloco async retorna um Deferred, um objeto não resolvido)
+                                    digimons.asSequence().map { digimon -> //Sequence para deixar o código mais performático
+                                        async {
+                                            webClient.get().uri { uriBuilder ->
+                                                uriBuilder.path("/{name}")
+                                                        .build(digimon)
+                                            }.awaitExchange().awaitBody<List<Digimon>>() //Sintaxe do WebClient para aguardar o request e o body
+                                        }
+                                    }.toList()
+                            //awaitAll para resolver a lista de Deferred, tornando-os em List<List<Digimon> Obs: pra cada digimon é retornado uma lista
+                            return@withContext digimonsAPIRequest.awaitAll()
                         }
-                    }.toList()
-                    requests.awaitAll()
-                }
+                //Retorna o valor para o "coroutineScope" ao qual está atribuído na própria função findAllDigimonsAsync()
+                return@coroutineScope digimonsAPIResponse
             }
-            time
-        }
-    }
 
-    fun findAllDigimonsSync(): Long {
-        val startTime = Instant.now()
+
+    fun findAllDigimonsSync(): List<List<Digimon>?> {
         val digimons = getDigimonsFromFile()
         val headers = HttpHeaders()
         val entity = HttpEntity<Any>(headers)
-        val time = measureTimeMillis {
-            val digimonsAPIResponse = digimons.asSequence().map { digimon ->
-                restTemplate.exchange("https://digimon-api.vercel.app/api/digimon/name/$digimon", HttpMethod.GET, entity, object : ParameterizedTypeReference<List<Digimon>>() {}).body
-            }.toList()
-        }
-        return time
+        return digimons.asSequence().map { digimon ->
+            restTemplate.exchange("https://digimon-api.vercel.app/api/digimon/name/$digimon", HttpMethod.GET, entity, object : ParameterizedTypeReference<List<Digimon>>() {}).body
+        }.toList()
     }
+
+    private suspend fun getDigimonsFromFileSuspend() =
+            resourceLoader.getResource(FILE_PATH).file.readText(charset = Charsets.UTF_8).split("\n")
 
     private fun getDigimonsFromFile() =
             resourceLoader.getResource(FILE_PATH).file.readText(charset = Charsets.UTF_8).split("\n")

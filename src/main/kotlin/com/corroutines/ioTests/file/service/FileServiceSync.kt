@@ -16,24 +16,14 @@ class FileServiceSync(
 
      fun processImages() {
         val images = getFiles()
-        val compressedImages = images.map { compress(it, "/tmp/folderTeste/", 50) }
+        val compressedImages = images.map {
+            logThreadName()
+            compress(it, "/tmp/folderTeste/", 50) }
     }
 
     private  fun getFiles(): List<Pair<String, File>> {
         return ResourcePatternUtils.getResourcePatternResolver(resourceLoader).getResources("classpath:images/*.jpg").map { it.filename!! to it.file }
     }
-
-     fun processOneImage() {
-        val image = getOneFile()
-        val compressedImage = compress(image, "/tmp/folderTeste/", 50)
-    }
-
-
-    private  fun getOneFile(): Pair<String, File> {
-        val resource = resourceLoader.getResource("classpath:images/01 - January 2020 (myphotopack.com).jpg")
-        return resource.filename!! to resource.file
-    }
-
 
     private  fun compress(image: Pair<String, File>, folderName: String, compressionQuality: Int): Pair<String, File> {
         val receivedImage = ImageIO.read(image.second)
@@ -51,8 +41,11 @@ class FileServiceSync(
         os.close()
         ios.close()
         writer.dispose()
-        return Pair(image.first, compressedImageFile)
+        return image.first to compressedImageFile
     }
 
     private  fun getImageExtension(filename: String) = filename.replaceBeforeLast(".", "").replace(".", "")
+
+    private fun logThreadName() = println("Current Thread: ${Thread.currentThread().name }")
+
 }

@@ -22,6 +22,7 @@ class FileServiceAsync(
                         withContext(Dispatchers.IO){
                             images.asSequence().map {
                                 async {
+                                    logThreadNameSuspended()
                                     compress(it, "/tmp/folderTeste/", 50)
                                 }
                             }.toList()
@@ -50,8 +51,10 @@ class FileServiceAsync(
         os.close()
         ios.close()
         writer.dispose()
-        return Pair(image.first, compressedImageFile)
+        return image.first to compressedImageFile
     }
 
     private suspend fun getImageExtension(filename: String) = filename.replaceBeforeLast(".", "").replace(".", "")
+
+    private suspend fun logThreadNameSuspended() = println("Current Thread: ${Thread.currentThread().name }")
 }

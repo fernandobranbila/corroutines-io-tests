@@ -12,7 +12,6 @@ import org.springframework.web.client.RestTemplate
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.awaitBody
 import org.springframework.web.reactive.function.client.awaitExchange
-import kotlin.system.measureTimeMillis
 
 @Component
 class DigimonService(
@@ -26,8 +25,8 @@ class DigimonService(
     val FILE_PATH = "classpath:digimon.txt"
 
     suspend fun findAllDigimonsAsync(): List<List<Digimon>> =
-            //Começa o escopo de uma corroutine usando configurações padrões
-            coroutineScope {
+            //Começa o contexto de uma corroutine usando configurações padrões
+            coroutineScope () {
                 //Pega a lista de digimons de forma concorrente
                 val digimons = getDigimonsFromFileSuspend()
                 //Atribui o resultado da linha 49, onde o Deferred foi resolvido (await)
@@ -38,7 +37,8 @@ class DigimonService(
                             val digimonsAPIRequest =
                                     //Inicia uma nova corroutine para cada um dos elementos na lista (cada bloco async retorna um Deferred, um objeto não resolvido)
                                     digimons.asSequence().map { digimon -> //Sequence para deixar o código mais performático
-                                        async {
+                                        async  {
+                                            logThreadNameSuspended()
                                             webClient.get().uri { uriBuilder ->
                                                 uriBuilder.path("/{name}")
                                                         .build(digimon)
@@ -58,6 +58,7 @@ class DigimonService(
         val headers = HttpHeaders()
         val entity = HttpEntity<Any>(headers)
         return digimons.asSequence().map { digimon ->
+            logThreadName()
             restTemplate.exchange("https://digimon-api.vercel.app/api/digimon/name/$digimon", HttpMethod.GET, entity, object : ParameterizedTypeReference<List<Digimon>>() {}).body
         }.toList()
     }
@@ -67,5 +68,9 @@ class DigimonService(
 
     private fun getDigimonsFromFile() =
             resourceLoader.getResource(FILE_PATH).file.readText(charset = Charsets.UTF_8).split("\n")
+
+    private suspend fun logThreadNameSuspended() = println("Current Thread: ${Thread.currentThread().name }")
+
+    private fun logThreadName() = println("Current Thread: ${Thread.currentThread().name }")
 
 }

@@ -1,4 +1,4 @@
-package com.corroutines.ioTests.file.service
+package com.coroutines.ioTests.file.service
 
 import org.springframework.core.io.ResourceLoader
 import org.springframework.core.io.support.ResourcePatternUtils

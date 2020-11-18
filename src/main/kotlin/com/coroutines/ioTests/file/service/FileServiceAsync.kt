@@ -1,4 +1,4 @@
-package com.corroutines.ioTests.file.service
+package com.coroutines.ioTests.file.service
 
 import kotlinx.coroutines.*
 import org.springframework.core.io.ResourceLoader

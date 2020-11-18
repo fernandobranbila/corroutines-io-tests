@@ -1,4 +1,4 @@
-package com.corroutines.ioTests.digimon.model
+package com.coroutines.ioTests.digimon.model
 
 data class Digimon (
         val name: String,

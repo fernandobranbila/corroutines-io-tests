@@ -1,4 +1,4 @@
-package com.corroutines.ioTests.config
+package com.coroutines.ioTests.config
 
 import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.context.annotation.Bean

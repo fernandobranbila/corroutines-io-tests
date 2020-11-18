@@ -1,4 +1,4 @@
-package com.corroutines.ioTests
+package com.coroutines.ioTests
 
 sealed class Result<out T, out E>
 

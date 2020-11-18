@@ -1,7 +1,7 @@
-package com.corroutines.ioTests.file.entrypoint
+package com.coroutines.ioTests.file.entrypoint
 
-import com.corroutines.ioTests.file.service.FileServiceAsync
-import com.corroutines.ioTests.file.service.FileServiceSync
+import com.coroutines.ioTests.file.service.FileServiceAsync
+import com.coroutines.ioTests.file.service.FileServiceSync
 import kotlinx.coroutines.reactive.awaitSingle
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.ServerRequest

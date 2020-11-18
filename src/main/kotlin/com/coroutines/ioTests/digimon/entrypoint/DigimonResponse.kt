@@ -1,6 +1,6 @@
-package com.corroutines.ioTests.digimon.entrypoint
+package com.coroutines.ioTests.digimon.entrypoint
 
-import com.corroutines.ioTests.digimon.model.Digimon
+import com.coroutines.ioTests.digimon.model.Digimon
 
 data class DigimonResponse(
         val executionTime: Long,

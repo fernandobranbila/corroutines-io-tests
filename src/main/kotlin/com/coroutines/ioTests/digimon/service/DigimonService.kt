@@ -1,6 +1,6 @@
-package com.corroutines.ioTests.digimon.service
+package com.coroutines.ioTests.digimon.service
 
-import com.corroutines.ioTests.digimon.model.Digimon
+import com.coroutines.ioTests.digimon.model.Digimon
 import kotlinx.coroutines.*
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.core.io.ResourceLoader

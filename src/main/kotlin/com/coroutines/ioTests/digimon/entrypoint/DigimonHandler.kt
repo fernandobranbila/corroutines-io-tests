@@ -1,6 +1,6 @@
-package com.corroutines.ioTests.digimon.entrypoint
+package com.coroutines.ioTests.digimon.entrypoint
 
-import com.corroutines.ioTests.digimon.service.DigimonService
+import com.coroutines.ioTests.digimon.service.DigimonService
 import kotlinx.coroutines.reactive.awaitSingle
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.*

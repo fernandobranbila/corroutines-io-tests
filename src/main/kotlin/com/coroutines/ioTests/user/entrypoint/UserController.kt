@@ -11,9 +11,14 @@ class UserController(
         private val userRepository: UserRepository,
 ) {
 
-    @PostMapping
+/*    @PostMapping
     fun saveNonConcurrent(@RequestBody user: User): User {
         return userRepository.save(user)
+    }*/
+
+    @PostMapping
+    fun saveNonConcurrent(@RequestBody userRequest: UserRequest): List<User> {
+        return userRequest.users.map { user -> userRepository.save(user) }
     }
 
     @GetMapping(params = ["name"])
